@@ -1,0 +1,468 @@
+{
+	"info": {
+		"_postman_id": "expense-mgmt-api-2025",
+		"name": "Expense Management API",
+		"description": "Complete API collection for Expense Management System built with NestJS and MongoDB",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Food & Dining\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categories"
+							]
+						},
+						"description": "Create a new expense category. The slug will be auto-generated from the name."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categories"
+							]
+						},
+						"description": "Retrieve all active categories (excluding soft-deleted ones)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category - Transportation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Transportation\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category - Entertainment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Entertainment\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category - Healthcare",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Healthcare\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Expenses",
+			"item": [
+				{
+					"name": "Create Expense",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Lunch at Restaurant\",\n  \"amount\": 1500,\n  \"categoryId\": \"{{categoryId}}\",\n  \"date\": \"2025-10-15\",\n  \"note\": \"Team lunch meeting\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/expenses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"expenses"
+							]
+						},
+						"description": "Create a new expense. Replace {{categoryId}} with actual category ID from Create Category response."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Expenses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/expenses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"expenses"
+							]
+						},
+						"description": "Get all expenses without any filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expenses - With Pagination",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/expenses?page=1&pageSize=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"expenses"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get expenses with pagination"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expenses - Filter by Month",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/expenses?month=2025-10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"expenses"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "2025-10"
+								}
+							]
+						},
+						"description": "Filter expenses by month (format: YYYY-MM)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expenses - Filter by Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/expenses?categoryId={{categoryId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"expenses"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "{{categoryId}}"
+								}
+							]
+						},
+						"description": "Filter expenses by category ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expenses - Filter by Month & Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/expenses?month=2025-10&categoryId={{categoryId}}&page=1&pageSize=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"expenses"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "2025-10"
+								},
+								{
+									"key": "categoryId",
+									"value": "{{categoryId}}"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Filter expenses by both month and category with pagination"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Expense - Grocery Shopping",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Grocery Shopping\",\n  \"amount\": 3500,\n  \"categoryId\": \"{{categoryId}}\",\n  \"date\": \"2025-10-14\",\n  \"note\": \"Weekly groceries\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/expenses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"expenses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Expense - Taxi Fare",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Taxi Fare\",\n  \"amount\": 500,\n  \"categoryId\": \"{{categoryId}}\",\n  \"date\": \"2025-10-15\",\n  \"note\": \"Office to home\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/expenses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"expenses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Expense - Movie Tickets",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Movie Tickets\",\n  \"amount\": 1200,\n  \"categoryId\": \"{{categoryId}}\",\n  \"date\": \"2025-10-13\",\n  \"note\": \"Weekend entertainment\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/expenses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"expenses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reports",
+			"item": [
+				{
+					"name": "Get Monthly Summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reports/summary?month=2025-10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reports",
+								"summary"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "2025-10"
+								}
+							]
+						},
+						"description": "Get monthly expense summary with total and category-wise breakdown. Month format: YYYY-MM"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Monthly Summary - Current Month",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reports/summary?month=2025-10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reports",
+								"summary"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "2025-10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Monthly Summary - Previous Month",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reports/summary?month=2025-09",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reports",
+								"summary"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "2025-09"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "categoryId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
