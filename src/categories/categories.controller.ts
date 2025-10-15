@@ -9,13 +9,13 @@ import { ResponsePayload } from 'src/common/interfaces/response-payload.interfac
 export class CategoriesController {
   constructor(private readonly svc: CategoriesService) {}
 
-  @Post()
+  @Post('create')
   async create(@Body() dto: CreateCategoryDto): Promise<ResponsePayload> {
     const data = await this.svc.create(dto);
     return { success: true, message: 'Category created', data };
   }
 
-  @Get()
+  @Get('get-all')
   async list(): Promise<ResponsePayload> {
     const data = await this.svc.findAll();
     return { success: true, data };

@@ -11,13 +11,13 @@ import { ExpensesService } from './expenses.service';
 export class ExpensesController {
   constructor(private svc: ExpensesService) {}
 
-  @Post()
+  @Post('create-expense')
   async create(@Body() dto: CreateExpenseDto): Promise<ResponsePayload> {
     const data = await this.svc.create(dto);
     return { success: true, message: 'Expense created', data };
   }
 
-  @Get()
+  @Get('get-all-expenses')
   async list(
     @Query() filter: FilterExpenseDto,
     @Query() pagination: PaginationDto,

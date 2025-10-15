@@ -108,25 +108,26 @@ The API will be available at `http://localhost:3000/api`
 
 ### Categories
 
-- **POST** `/api/categories` - Create a new category
-- **GET** `/api/categories` - Get all categories
+- **POST** `/categories/create` - Create a new category
+- **GET** `/categories/get-all` - Get all categories with pagination
+  - Query params: `page` (default: 1), `limit` (default: 10)
 
 ### Expenses
 
-- **POST** `/api/expenses` - Create a new expense
-- **GET** `/api/expenses` - Get all expenses (with filters)
-  - Query params: `month` (YYYY-MM), `categoryId`, `page`, `pageSize`
+- **POST** `/expenses/create-expense` - Create a new expense
+- **GET** `/expenses/get-all-expenses` - Get all expenses (with filters)
+  - Query params: `month` (1-12), `year` (YYYY), `categoryId`, `page`, `limit`
 
 ### Reports
 
-- **GET** `/api/reports/summary` - Get monthly summary
-  - Query params: `month` (YYYY-MM) - Required
+- **GET** `/reports/summary` - Get monthly summary
+  - Query params: `month` (1-12), `year` (YYYY) - Required
 
 ## Request/Response Examples
 
 ### Create Category
 ```bash
-POST /api/categories
+POST /categories/create
 Content-Type: application/json
 
 {
@@ -138,7 +139,7 @@ Response:
   "success": true,
   "message": "Category created",
   "data": {
-    "_id": "...",
+    "_id": "670e1234567890abcdef1234",
     "name": "Food & Dining",
     "slug": "food-dining",
     "isDeleted": false,
@@ -150,15 +151,15 @@ Response:
 
 ### Create Expense
 ```bash
-POST /api/expenses
+POST /expenses/create-expense
 Content-Type: application/json
 
 {
-  "title": "Lunch at Restaurant",
+  "title": "Grocery Shopping",
   "amount": 1500,
-  "categoryId": "67...",
-  "date": "2025-10-15",
-  "note": "Team lunch"
+  "categoryId": "670e1234567890abcdef1234",
+  "date": "2025-10-15T07:00:00.000Z",
+  "note": "Weekly groceries from local market"
 }
 
 Response:
@@ -166,54 +167,95 @@ Response:
   "success": true,
   "message": "Expense created",
   "data": {
-    "_id": "...",
-    "title": "Lunch at Restaurant",
+    "_id": "670e9876543210fedcba9876",
+    "title": "Grocery Shopping",
     "amount": 1500,
-    "categoryId": "67...",
-    "date": "2025-10-15T00:00:00.000Z",
-    "note": "Team lunch",
-    "isDeleted": false
+    "categoryId": "670e1234567890abcdef1234",
+    "date": "2025-10-15T07:00:00.000Z",
+    "note": "Weekly groceries from local market",
+    "isDeleted": false,
+    "createdAt": "2025-10-15T10:30:00.000Z",
+    "updatedAt": "2025-10-15T10:30:00.000Z"
   }
 }
 ```
 
-### Get Expenses with Filters
+### Get All Expenses
 ```bash
-GET /api/expenses?month=2025-10&categoryId=67...&page=1&pageSize=10
+GET /expenses/get-all-expenses?page=1&limit=10
 
 Response:
 {
   "success": true,
-  "data": [...],
+  "data": [
+    {
+      "_id": "670e9876543210fedcba9876",
+      "title": "Grocery Shopping",
+      "amount": 1500,
+      "categoryId": {
+        "_id": "670e1234567890abcdef1234",
+        "name": "Food & Dining",
+        "slug": "food-dining"
+      },
+      "date": "2025-10-15T07:00:00.000Z",
+      "note": "Weekly groceries",
+      "isDeleted": false
+    }
+  ],
   "meta": {
     "page": 1,
-    "pageSize": 10,
+    "limit": 10,
     "total": 25,
     "totalPages": 3
   }
 }
 ```
 
+### Filter Expenses by Month
+```bash
+GET /expenses/get-all-expenses?month=10&year=2025&page=1&limit=10
+```
+
+### Filter Expenses by Category
+```bash
+GET /expenses/get-all-expenses?categoryId=670e1234567890abcdef1234&page=1&limit=10
+```
+
+### Filter by Month & Category
+```bash
+GET /expenses/get-all-expenses?month=10&year=2025&categoryId=670e1234567890abcdef1234&page=1&limit=10
+```
+
 ### Get Monthly Summary
 ```bash
-GET /api/reports/summary?month=2025-10
+GET /reports/summary?month=10&year=2025
 
 Response:
 {
   "success": true,
   "data": {
-    "month": "2025-10",
-    "total": 15000,
+    "month": 10,
+    "year": 2025,
+    "totalExpenses": 15000,
+    "expenseCount": 45,
     "byCategory": [
       {
-        "categoryId": "67...",
+        "_id": "670e1234567890abcdef1234",
         "categoryName": "Food & Dining",
-        "total": 8000
+        "total": 8000,
+        "count": 20
       },
       {
-        "categoryId": "67...",
+        "_id": "670e1234567890abcdef5678",
         "categoryName": "Transportation",
-        "total": 5000
+        "total": 5000,
+        "count": 15
+      },
+      {
+        "_id": "670e1234567890abcdef9012",
+        "categoryName": "Entertainment",
+        "total": 2000,
+        "count": 10
       }
     ]
   }
@@ -223,20 +265,130 @@ Response:
 ## Database Schema
 
 ### Category Schema
-- `name` (String, required, indexed)
+```typescript
+@Schema({ timestamps: true })
+export class Category {
+  @Prop({ required: true, trim: true, index: true })
+  name: string;
+
+  @Prop({ required: true, unique: true, lowercase: true })
+  slug: string;
+
+  @Prop({ default: false, index: true })
+  isDeleted: boolean;
+}
+```
+
+**Fields:**
+- `name` (String, required, indexed, trimmed)
 - `slug` (String, required, unique, lowercase)
 - `isDeleted` (Boolean, default: false, indexed)
-- `timestamps` (createdAt, updatedAt)
+- `timestamps` (createdAt, updatedAt) - Auto-generated
 
 ### Expense Schema
-- `title` (String, required)
+```typescript
+@Schema({ timestamps: true })
+export class Expense {
+  @Prop({ required: true, trim: true })
+  title: string;
+
+  @Prop({ required: true })
+  amount: number;
+
+  @Prop({ type: Types.ObjectId, ref: 'Category', required: true, index: true })
+  categoryId: Types.ObjectId;
+
+  @Prop({ required: true, type: Date, index: true })
+  date: Date;
+
+  @Prop()
+  note?: string;
+
+  @Prop({ default: false, index: true })
+  isDeleted: boolean;
+}
+```
+
+**Fields:**
+- `title` (String, required, trimmed)
 - `amount` (Number, required)
 - `categoryId` (ObjectId, required, indexed, ref: Category)
-- `date` (Date, required, indexed)
+- `date` (Date, required, indexed, ISO 8601 format)
 - `note` (String, optional)
 - `isDeleted` (Boolean, default: false, indexed)
-- `timestamps` (createdAt, updatedAt)
-- Compound index: `date + categoryId`
+- `timestamps` (createdAt, updatedAt) - Auto-generated
+
+**Indexes:**
+- Single indexes: `categoryId`, `date`, `isDeleted`
+- Compound index: `{ date: 1, categoryId: 1 }`
+
+### DTOs (Data Transfer Objects)
+
+#### CreateCategoryDto
+```typescript
+export class CreateCategoryDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+}
+```
+
+#### CreateExpenseDto
+```typescript
+export class CreateExpenseDto {
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsNumber()
+  amount: number;
+
+  @IsMongoId()
+  categoryId: string;
+
+  @IsDateString()
+  date: string; // ISO 8601 format
+
+  @IsOptional()
+  @IsString()
+  note?: string;
+}
+```
+
+#### FilterExpenseDto
+```typescript
+export class FilterExpenseDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(12)
+  month?: number;
+
+  @IsOptional()
+  @IsInt()
+  year?: number;
+
+  @IsOptional()
+  @IsMongoId()
+  categoryId?: string;
+}
+```
+
+#### PaginationDto
+```typescript
+export class PaginationDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit?: number = 10;
+}
+```
 
 ## Postman Collection
 
