@@ -240,7 +240,24 @@ Response:
 
 ## Postman Collection
 
-Import the `Expense-Management-API.postman_collection.json` file into Postman to test all endpoints.
+A complete Postman collection is available in the `postman/` folder.
+
+**Import Instructions:**
+1. Open Postman
+2. Click **Import** button
+3. Select `postman/expense-management-api.postman_collection.json`
+4. Collection will be imported with all endpoints
+
+**Collection includes:**
+- ✅ All Category endpoints (Create, List)
+- ✅ All Expense endpoints (Create, List, Filter by Month/Category)
+- ✅ Reports endpoint (Monthly Summary)
+- ✅ Pre-configured variables (baseUrl, categoryId)
+- ✅ Sample request bodies
+
+**Usage:**
+- Update `{{categoryId}}` variable after creating a category
+- Default `{{baseUrl}}` is set to `http://localhost:3000`
 
 ## Project Structure Features
 
